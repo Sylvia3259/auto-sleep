@@ -46,7 +46,7 @@ void KeyboardHookThread() {
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 	time_t currentTime;
 	time(&currentTime);
-	
+
 	if (lastEventTime != currentTime)
 		lastEventTime = currentTime;
 
