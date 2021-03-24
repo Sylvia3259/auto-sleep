@@ -9,23 +9,19 @@ static std::thread thread;
 extern std::atomic<time_t> lastEventTime;
 
 BOOL InitializeAudioMeter() {
+	if (!isRunning) {
+		isRunning = true;
+		thread = std::thread(AudioMeterThread);
+	}
+
 	if (!coInitialized) {
 		if SUCCEEDED(CoInitialize(NULL)) {
 			coInitialized = TRUE;
 
-			if SUCCEEDED(CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (LPVOID*)&pEnumerator)) {
-				if SUCCEEDED(pEnumerator->GetDefaultAudioEndpoint(EDataFlow::eRender, ERole::eMultimedia, &pDevice)) {
-					if SUCCEEDED(pDevice->Activate(__uuidof(IAudioMeterInformation), CLSCTX_ALL, NULL, (void**)&pAudioMeterInfo)) {
-
-						if (!isRunning) {
-							isRunning = true;
-							thread = std::thread(AudioMeterThread);
-						}
-
+			if SUCCEEDED(CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (LPVOID*)&pEnumerator))
+				if SUCCEEDED(pEnumerator->GetDefaultAudioEndpoint(EDataFlow::eRender, ERole::eMultimedia, &pDevice))
+					if SUCCEEDED(pDevice->Activate(__uuidof(IAudioMeterInformation), CLSCTX_ALL, NULL, (void**)&pAudioMeterInfo))
 						return TRUE;
-					}
-				}
-			}
 		}
 	}
 	return FALSE;
@@ -59,14 +55,16 @@ void UninitializeAudioMeter() {
 void AudioMeterThread() {
 	float peak;
 	while (isRunning) {
-		pAudioMeterInfo->GetPeakValue(&peak);
-		if (peak > 10e-5f) {
-			time_t currentTime;
-			time(&currentTime);
+		if (pAudioMeterInfo) {
+			pAudioMeterInfo->GetPeakValue(&peak);
+			if (peak > 10e-5f) {
+				time_t currentTime;
+				time(&currentTime);
 
-			if (lastEventTime != currentTime)
-				lastEventTime = currentTime;
+				if (lastEventTime != currentTime)
+					lastEventTime = currentTime;
+			}
+			Sleep(100);
 		}
-		Sleep(100);
 	}
 }
