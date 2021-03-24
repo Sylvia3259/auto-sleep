@@ -64,7 +64,7 @@ void AudioMeterThread() {
 				if (lastEventTime != currentTime)
 					lastEventTime = currentTime;
 			}
-			Sleep(100);
 		}
+		Sleep(100);
 	}
 }
