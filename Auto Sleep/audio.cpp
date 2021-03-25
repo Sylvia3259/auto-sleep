@@ -33,22 +33,22 @@ void UninitializeAudioMeter() {
 		thread.join();
 	}
 
+	if (pAudioMeterInfo) {
+		pAudioMeterInfo->Release();
+		pAudioMeterInfo = NULL;
+	}
+	if (pDevice) {
+		pDevice->Release();
+		pDevice = NULL;
+	}
+	if (pEnumerator) {
+		pEnumerator->Release();
+		pEnumerator = NULL;
+	}
+
 	if (coInitialized) {
 		CoUninitialize();
 		coInitialized = FALSE;
-
-		if (pEnumerator) {
-			pEnumerator->Release();
-			pEnumerator = NULL;
-			if (pDevice) {
-				pDevice->Release();
-				pDevice = NULL;
-				if (pAudioMeterInfo) {
-					pAudioMeterInfo->Release();
-					pAudioMeterInfo = NULL;
-				}
-			}
-		}
 	}
 }
 
