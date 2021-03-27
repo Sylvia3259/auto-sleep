@@ -1,6 +1,6 @@
 #include "audio.h"
 
-static BOOL coInitialized = FALSE;
+static BOOL bCoInitialized = FALSE;
 static IMMDeviceEnumerator* pEnumerator = NULL;
 static IMMDevice* pDevice = NULL;
 static IAudioMeterInformation* pAudioMeterInfo = NULL;
@@ -14,9 +14,9 @@ BOOL InitializeAudioMeter() {
 		thread = std::thread(AudioMeterThread);
 	}
 
-	if (!coInitialized) {
+	if (!bCoInitialized) {
 		if SUCCEEDED(CoInitialize(NULL)) {
-			coInitialized = TRUE;
+			bCoInitialized = TRUE;
 
 			if SUCCEEDED(CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (LPVOID*)&pEnumerator))
 				if SUCCEEDED(pEnumerator->GetDefaultAudioEndpoint(EDataFlow::eRender, ERole::eMultimedia, &pDevice))
@@ -24,6 +24,7 @@ BOOL InitializeAudioMeter() {
 						return TRUE;
 		}
 	}
+
 	return FALSE;
 }
 
@@ -46,9 +47,9 @@ void UninitializeAudioMeter() {
 		pEnumerator = NULL;
 	}
 
-	if (coInitialized) {
+	if (bCoInitialized) {
 		CoUninitialize();
-		coInitialized = FALSE;
+		bCoInitialized = FALSE;
 	}
 }
 

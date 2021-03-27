@@ -14,6 +14,7 @@ BOOL InitializeKeyboardHook() {
 		while (!isInitialized);
 		return hKeyboardHook != NULL;
 	}
+
 	return FALSE;
 }
 
@@ -24,17 +25,19 @@ BOOL UninitializeKeyboardHook() {
 
 		return hKeyboardHook == NULL;
 	}
+
 	return TRUE;
 }
 
 void KeyboardHookThread() {
+	MSG message;
+
 	hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(NULL), 0);
 	isInitialized = true;
 
-	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0) && isRunning) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+	while (GetMessage(&message, NULL, 0, 0) && isRunning) {
+		TranslateMessage(&message);
+		DispatchMessage(&message);
 	}
 
 	if (hKeyboardHook)

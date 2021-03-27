@@ -14,6 +14,7 @@ BOOL InitializeMouseHook() {
 		while (!isInitialized);
 		return hMouseHook != NULL;
 	}
+
 	return FALSE;
 }
 
@@ -24,17 +25,19 @@ BOOL UninitializeMouseHook() {
 
 		return hMouseHook == NULL;
 	}
+
 	return TRUE;
 }
 
 void MouseHookThread() {
+	MSG message;
+
 	hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, LowLevelMouseProc, GetModuleHandle(NULL), 0);
 	isInitialized = true;
 
-	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0) && isRunning) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+	while (GetMessage(&message, NULL, 0, 0) && isRunning) {
+		TranslateMessage(&message);
+		DispatchMessage(&message);
 	}
 
 	if (hMouseHook)
