@@ -1,6 +1,7 @@
+#include <iostream>
 #include "common.h"
 
-std::atomic<time_t> lastEventTime = MAXLONGLONG;
+std::atomic<time_t> lastEventTime = 0;
 
 int main() {
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
@@ -28,13 +29,18 @@ int main() {
 		return 1;
 	}
 
+	time_t currentTime;
+	time(&currentTime);
+	lastEventTime = currentTime;
+
 	for (;;) {
-		time_t currentTime;
 		time(&currentTime);
 
 		if (currentTime - lastEventTime >= 15 * 60) {
-			lastEventTime = MAXLONGLONG;
 			SetSuspendState(FALSE, TRUE, FALSE);
+
+			time(&currentTime);
+			lastEventTime = currentTime;
 		}
 
 		Sleep(100);
