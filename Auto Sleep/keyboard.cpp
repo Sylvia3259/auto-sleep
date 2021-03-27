@@ -24,7 +24,7 @@ BOOL UninitializeKeyboardHook() {
 
 		return hKeyboardHook == NULL;
 	}
-	return FALSE;
+	return TRUE;
 }
 
 void KeyboardHookThread() {
@@ -45,10 +45,9 @@ void KeyboardHookThread() {
 
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 	time_t currentTime;
-	time(&currentTime);
 
-	if (lastEventTime != currentTime)
-		lastEventTime = currentTime;
+	time(&currentTime);
+	lastEventTime = currentTime;
 
 	return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
 }

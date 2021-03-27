@@ -53,18 +53,19 @@ void UninitializeAudioMeter() {
 }
 
 void AudioMeterThread() {
-	float peak;
+	FLOAT peak;
+	time_t currentTime;
+
 	while (isRunning) {
 		if (pAudioMeterInfo) {
 			pAudioMeterInfo->GetPeakValue(&peak);
-			if (peak > 10e-5f) {
-				time_t currentTime;
-				time(&currentTime);
 
-				if (lastEventTime != currentTime)
-					lastEventTime = currentTime;
+			if (peak > 10e-5f) {
+				time(&currentTime);
+				lastEventTime = currentTime;
 			}
 		}
+
 		Sleep(100);
 	}
 }

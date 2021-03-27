@@ -24,7 +24,7 @@ BOOL UninitializeMouseHook() {
 
 		return hMouseHook == NULL;
 	}
-	return FALSE;
+	return TRUE;
 }
 
 void MouseHookThread() {
@@ -45,10 +45,9 @@ void MouseHookThread() {
 
 LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
 	time_t currentTime;
-	time(&currentTime);
 
-	if (lastEventTime != currentTime)
-		lastEventTime = currentTime;
+	time(&currentTime);
+	lastEventTime = currentTime;
 
 	return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
 }
