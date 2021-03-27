@@ -4,7 +4,7 @@
 #include <powrprof.h>
 #pragma comment (lib, "powrprof.lib")
 
-BOOL CheckAlreadyRunning();
+BOOL IsAlreadyRunning();
 BOOL SetPrivilege(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege);
 BOOL InitializeAll();
 BOOL UninitializeAll();
@@ -16,7 +16,7 @@ int main() {
 
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 
-	if (CheckAlreadyRunning())
+	if (IsAlreadyRunning())
 		return 1;
 
 	if (!SetPrivilege(SE_SHUTDOWN_NAME, TRUE))
@@ -49,7 +49,7 @@ int main() {
 	return 0;
 }
 
-BOOL CheckAlreadyRunning() {
+BOOL IsAlreadyRunning() {
 	HANDLE hMutex = CreateMutex(NULL, FALSE, L"AUTO_SLEEP_MUTEX");
 
 	if (!hMutex) {
