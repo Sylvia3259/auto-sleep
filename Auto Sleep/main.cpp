@@ -1,5 +1,8 @@
-#include <iostream>
-#include "common.h"
+#include "keyboard.h"
+#include "mouse.h"
+#include "audio.h"
+#include <powrprof.h>
+#pragma comment (lib, "powrprof.lib")
 
 std::atomic<time_t> lastEventTime = 0;
 
