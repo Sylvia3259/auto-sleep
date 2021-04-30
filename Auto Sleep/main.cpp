@@ -1,6 +1,8 @@
 #include "keyboard.h"
 #include "mouse.h"
 #include "audio.h"
+#include <tchar.h>
+#include <Windows.h>
 #include <powrprof.h>
 #pragma comment (lib, "powrprof.lib")
 
@@ -53,11 +55,11 @@ BOOL IsAlreadyRunning() {
 	HANDLE hMutex = CreateMutex(NULL, FALSE, L"AUTO_SLEEP_MUTEX");
 
 	if (!hMutex) {
-		MessageBox(NULL, L"CreateMutex() failed.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("CreateMutex() failed"), _T("Error"), MB_ICONERROR);
 		return TRUE;
 	}
 	if (GetLastError() == ERROR_ALREADY_EXISTS) {
-		MessageBox(NULL, L"The program is already running.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("The program is already running"), _T("Error"), MB_ICONERROR);
 		return TRUE;
 	}
 
@@ -67,15 +69,15 @@ BOOL IsAlreadyRunning() {
 BOOL SetPrivilege(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege) {
 	HANDLE hToken;
 	LUID luid;
-	TOKEN_PRIVILEGES tokenPrivileges{};
+	TOKEN_PRIVILEGES tokenPrivileges = {};
 
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
-		MessageBox(NULL, L"OpenProcessToken() failed.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("OpenProcessToken() failed"), _T("Error"), MB_ICONERROR);
 		return FALSE;
 	}
 
 	if (!LookupPrivilegeValue(NULL, lpszPrivilege, &luid)) {
-		MessageBox(NULL, L"LookupPrivilegeValue() failed.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("LookupPrivilegeValue() failed"), _T("Error"), MB_ICONERROR);
 		return FALSE;
 	}
 
@@ -84,16 +86,16 @@ BOOL SetPrivilege(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege) {
 	tokenPrivileges.Privileges[0].Attributes = bEnablePrivilege ? SE_PRIVILEGE_ENABLED : 0;
 
 	if (!AdjustTokenPrivileges(hToken, FALSE, &tokenPrivileges, sizeof tokenPrivileges, NULL, NULL)) {
-		MessageBox(NULL, L"AdjustTokenPrivileges() failed.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("AdjustTokenPrivileges() failed"), _T("Error"), MB_ICONERROR);
 		return FALSE;
 	}
 	if (GetLastError() == ERROR_NOT_ALL_ASSIGNED) {
-		MessageBox(NULL, L"The token does not have the specified privilege.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("The token does not have the specified privilege"), _T("Error"), MB_ICONERROR);
 		return FALSE;
 	}
 
 	if (!CloseHandle(hToken)) {
-		MessageBox(NULL, L"CloseHandle() failed.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("CloseHandle() failed"), _T("Error"), MB_ICONERROR);
 		return FALSE;
 	}
 
@@ -102,15 +104,15 @@ BOOL SetPrivilege(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege) {
 
 BOOL InitializeAll() {
 	if (!InitializeKeyboardHook()) {
-		MessageBox(NULL, L"InitializeKeyboardHook() failed.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("InitializeKeyboardHook() failed"), _T("Error"), MB_ICONERROR);
 		return FALSE;
 	}
 	if (!InitializeMouseHook()) {
-		MessageBox(NULL, L"InitializeMouseHook() failed.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("InitializeMouseHook() failed"), _T("Error"), MB_ICONERROR);
 		return FALSE;
 	}
 	if (!InitializeAudioMeter()) {
-		MessageBox(NULL, L"InitializeAudioMeter() failed.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("InitializeAudioMeter() failed"), _T("Error"), MB_ICONERROR);
 		return FALSE;
 	}
 
@@ -121,11 +123,11 @@ BOOL UninitializeAll() {
 	BOOL bSuccess = TRUE;
 
 	if (!UninitializeKeyboardHook()) {
-		MessageBox(NULL, L"UninitializeKeyboardHook() failed.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("UninitializeKeyboardHook() failed."), _T("Error"), MB_ICONERROR);
 		bSuccess = FALSE;
 	}
 	if (UninitializeMouseHook()) {
-		MessageBox(NULL, L"UninitializeMouseHook() failed.", L"Error", MB_ICONERROR);
+		MessageBox(NULL, _T("UninitializeMouseHook() failed."), _T("Error"), MB_ICONERROR);
 		bSuccess = FALSE;
 	}
 	UninitializeAudioMeter();
